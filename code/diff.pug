@@ -1,0 +1,11 @@
+doctype html
+head
+  script(type='text/javascript' src='https://cdn.jsdelivr.net/npm/jsondiffpatch/dist/jsondiffpatch.umd.min.js')
+  style
+    include style.css
+    include html.css
+    include annotated.css
+#visual
+script.
+  // beautiful html diff
+  document.getElementById('visual').innerHTML = jsondiffpatch.formatters.html.format(!{delta});

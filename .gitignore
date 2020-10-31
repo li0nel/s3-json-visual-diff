@@ -1,0 +1,5 @@
+*.json
+*.zip
+code/node_modules/
+terraform.tfstate
+terraform.tfstate.backup
