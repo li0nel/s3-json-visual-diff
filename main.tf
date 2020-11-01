@@ -46,7 +46,8 @@ resource "aws_lambda_function" "function" {
   environment {
     variables = {
       BUCKET_NAME = aws_s3_bucket.bucket.id,
-      REGION = data.aws_region.current.name
+      REGION = data.aws_region.current.name,
+      SLACK_INCOMING_WEBHOOK = var.slack_incoming_webhook
     }
   }
 
