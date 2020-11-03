@@ -1,5 +1,6 @@
 variable "slack_incoming_webhook" {
-  type = string
+  default = null
+  type    = string
 }
 
 variable "bucket_name" {

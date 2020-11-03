@@ -48,7 +48,7 @@ exports.handler = function (event, context, callback) {
     
                     s3.putObject(params, function(err, data) {
                         if (err) console.log(err, err.stack); // an error occurred
-                        else {
+                        else if (process.env.SLACK_INCOMING_WEBHOOK != undefined) {
                             // Push to Slack
                             fetch(process.env.SLACK_INCOMING_WEBHOOK, {
                                 method: 'post',
