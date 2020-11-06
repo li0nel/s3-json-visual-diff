@@ -41,6 +41,10 @@ resource "null_resource" "npm_install" {
   provisioner "local-exec" {
     command = "cd ${path.module}/code && npm install"
  }
+ 
+ triggers = {
+   always_run = timestamp()
+ }
 }
 
 resource "aws_lambda_function" "function" {
