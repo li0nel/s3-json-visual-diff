@@ -3,11 +3,25 @@ var AWS = require('aws-sdk');
 var s3 = new AWS.S3();
 
 const pug = require('pug');
-const jsondiffpatch = require('jsondiffpatch');
+const jsondiffpatch = require('jsondiffpatch').create({
+    objectHash: function(obj) {
+        return obj.id;
+    },
+    arrays: {
+        detectMove: false
+    }
+});
+
 const fetch = require('node-fetch');
 
 const bucket = process.env.BUCKET_NAME
 const region = process.env.REGION
+
+var sort_by_id = function(a, b){
+    if(a.id < b.id) return -1
+    else if(a.id > b.id) return 1
+    else return 0
+}
 
 exports.handler = function (event, context, callback) {
     // get previous VersionId from AWS SDK
@@ -32,6 +46,30 @@ exports.handler = function (event, context, callback) {
                     return response.json();
                 }));
             }).then(function (data) {
+                data.forEach((menu_json, i) => {
+                    menu_json.items.sort(sort_by_id)
+                    menu_json.items.forEach((item, i) => {
+                        item.portions.sort(sort_by_id)
+                        item.portions.forEach((portion, i) => {
+                            if (portion.modifiers) portion.modifiers.sort(sort_by_id)
+                        })
+                    })
+
+                    menu_json.menus.sort(sort_by_id)
+                    menu_json.menus.forEach((menu, i) => {
+                        menu.categories.sort(sort_by_id)
+                        menu.categories.forEach((cat, i) => {
+                            if (cat.item_ids) cat.item_ids.sort(sort_by_id)
+                            if (cat.categories) {
+                                cat.categories.sort(sort_by_id)
+                                cat.categories.forEach((cat, id) => {
+                                    cat.item_ids.sort(sort_by_id)
+                                })
+                            }
+                        })
+                    })
+                })
+
                 let delta = jsondiffpatch.diff(data[0], data[1])
                 let nb_items = delta.items ? Object.keys(delta.items).length : 0
                 let nb_menus = delta.menus ? Object.keys(delta.menus).length : 0
@@ -40,7 +78,8 @@ exports.handler = function (event, context, callback) {
                 if (nb_menus || nb_items || nb_modifiers) {
                     var params = {
                         Body: pug.renderFile('diff.pug', {
-                            delta: JSON.stringify(delta)
+                            delta: JSON.stringify(delta),
+                            left: JSON.stringify(data[0])
                         }), 
                         Bucket: bucket, 
                         Key: event.Records[0].s3.object.key + '.diff',
