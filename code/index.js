@@ -20,10 +20,12 @@ exports.handler = function (event, context, callback) {
        }, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
         else {
+            let menu_one = `https://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}?versionId=${data.Versions[0].VersionId}`
+            let menu_two = `https://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}?versionId=${data.VersionIdMarker}`
             // compare and generate HTML diff
             Promise.all([
-                fetch(`https://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}?versionId=${data.Versions[0].VersionId}`),
-                fetch(`https://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}?versionId=${data.VersionIdMarker}`)
+                fetch(menu_one),
+                fetch(menu_two)
             ]).then(function (responses) {
                 // Get a JSON object from each of the responses
                 return Promise.all(responses.map(function (response) {
@@ -53,7 +55,7 @@ exports.handler = function (event, context, callback) {
                             fetch(process.env.SLACK_INCOMING_WEBHOOK, {
                                 method: 'post',
                                 body: JSON.stringify({
-                                    "text": `${nb_menus} menu(s), ${nb_items} item(s) and ${nb_modifiers} modifier(s) updated on \`${event.Records[0].s3.object.key.replace("api/menu/", "")}\` ; <http://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}.diff?versionId=${data.VersionId}|see diff>`
+                                    "text": `${nb_menus} menu(s), ${nb_items} item(s) and ${nb_modifiers} modifier(s) updated on \`${event.Records[0].s3.object.key.replace("api/menu/", "")}\` ; <${menu_one}|before> <${menu_two}|after> <http://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}.diff?versionId=${data.VersionId}|diff>`
                                 }),
                                 headers: {'Content-Type': 'application/json'}
                             }).then(res => callback());
