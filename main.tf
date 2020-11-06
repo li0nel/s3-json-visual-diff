@@ -33,6 +33,14 @@ data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/code"
   output_path = "${path.module}/index.zip"
+
+  depends_on = [null_resource.npm_install]
+}
+
+resource "null_resource" "npm_install" {
+  provisioner "local-exec" {
+    command = "cd code && npm install"
+ }
 }
 
 resource "aws_lambda_function" "function" {
