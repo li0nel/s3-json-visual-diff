@@ -22,8 +22,8 @@ exports.handler = function (event, context, callback) {
         else {
             // compare and generate HTML diff
             Promise.all([
-                fetch(`https://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}?versionId=${data.Versions[0].VersionId}`),
-                fetch(`https://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}?versionId=${data.VersionIdMarker}`)
+                fetch(`https://s3.${region}.amazonaws.com/${bucket}/${event.Records[0].s3.object.key}?versionId=${data.Versions[0].VersionId}`),
+                fetch(`https://s3.${region}.amazonaws.com/${bucket}/${event.Records[0].s3.object.key}?versionId=${data.VersionIdMarker}`)
             ]).then(function (responses) {
                 // Get a JSON object from each of the responses
                 return Promise.all(responses.map(function (response) {
