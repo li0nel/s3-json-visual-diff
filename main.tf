@@ -39,7 +39,11 @@ data "archive_file" "lambda_zip" {
 
 resource "null_resource" "npm_install" {
   provisioner "local-exec" {
-    command = "cd code && npm install"
+    command = "cd ${path.module}/code && npm install"
+ }
+ 
+ triggers = {
+   always_run = timestamp()
  }
 }
 
