@@ -1,0 +1,17 @@
+{
+  "name": "s3jsondiff",
+  "version": "1.0.0",
+  "description": "",
+  "main": "event.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.783.0",
+    "jsondiffpatch": "^0.4.1",
+    "node-fetch": "^2.6.1",
+    "pug": "^3.0.0"
+  }
+}
