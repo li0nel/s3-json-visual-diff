@@ -33,9 +33,9 @@ exports.handler = function (event, context, callback) {
         KeyMarker: event.Records[0].s3.object.key
        }, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
-        else {
-            let menu_one = `https://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}?versionId=${data.Versions[0].VersionId}`
-            let menu_two = `https://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}?versionId=${data.VersionIdMarker}`
+        else if (data.Versions.length) {
+            let menu_one = `https://s3.${region}.amazonaws.com/${bucket}/${event.Records[0].s3.object.key}?versionId=${data.Versions[0].VersionId}`
+            let menu_two = `https://s3.${region}.amazonaws.com/${bucket}/${event.Records[0].s3.object.key}?versionId=${data.VersionIdMarker}`
             // compare and generate HTML diff
             Promise.all([
                 fetch(menu_one),
@@ -109,6 +109,9 @@ exports.handler = function (event, context, callback) {
                 // if there's an error, log it
                 console.log(error);
             });
+        } else {
+            console.log('first menu version')
+            callback()
         }
     });
 }
