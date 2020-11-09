@@ -94,7 +94,7 @@ exports.handler = function (event, context, callback) {
                             fetch(process.env.SLACK_INCOMING_WEBHOOK, {
                                 method: 'post',
                                 body: JSON.stringify({
-                                    "text": `${nb_menus} menu(s), ${nb_items} item(s) and ${nb_modifiers} modifier(s) updated on \`${event.Records[0].s3.object.key.replace("api/menu/", "")}\` ; <${menu_one}|before> <${menu_two}|after> <http://${bucket}.s3.${region}.amazonaws.com/${event.Records[0].s3.object.key}.diff?versionId=${data.VersionId}|diff>`
+                                    "text": `New menu publication on \`${event.Records[0].s3.object.key.replace("api/menu/", "")}\` <${menu_one}|before> => <${menu_two}|after> (<http://s3.${region}.amazonaws.com/${bucket}/${event.Records[0].s3.object.key}.diff?versionId=${data.VersionId}|list of updates>)`
                                 }),
                                 headers: {'Content-Type': 'application/json'}
                             }).then(res => callback());
