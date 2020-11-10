@@ -5,10 +5,10 @@ var s3 = new AWS.S3();
 const pug = require('pug');
 const jsondiffpatch = require('jsondiffpatch').create({
     objectHash: function(obj) {
-        return obj.id;
+        return obj.id || obj.startsAt + obj.endsAt || obj.closed || obj.modifierId;
     },
     arrays: {
-        detectMove: false
+        detectMove: true
     }
 });
 
